@@ -141,9 +141,12 @@ if len(selected_indices) == 1:
         st.session_state.good_info['freq'].append(selected_rows.values.tolist()[0][1])
         st.session_state.good_info['nums_reac'].append(data_all['nums_reactions'].values[int(selected_indices[0])])
         download_to_excel(st.session_state.good_info, type_aam=True)
-        download_to_drive(st.session_state.good_info, datetime_NY.strftime("%H_%M"), type_aam=True)
-        st.write('Отлично, сохранено!')
-        shutil.rmtree(f'data_{datetime_NY.strftime("%H_%M")}.pickle')
+        time = datetime_NY.strftime("%H_%M")
+        b = io.BytesIO()
+        pickle.dump(st.session_state.good_info, b)
+        b64 = base64.b64encode(b.getvalue()).decode()
+        st.download_button(label="Download data", data=b64, file_name=f"good_data_{time}.pickle")
+#         download_to_drive(st.session_state.good_info, datetime_NY.strftime("%H_%M"), type_aam=True)
         del st.session_state.good_info
     elif checkbox_no and not checkbox_yes:
         if 'before' not in st.session_state and 'after' not in st.session_state:
@@ -207,8 +210,11 @@ if len(selected_indices) == 1:
             tz_NY = pytz.timezone('Europe/Moscow')
             datetime_NY = datetime.now(tz_NY)
             download_to_excel(st.session_state.bad_info, type_aam=False)
-            download_to_drive(st.session_state.bad_info, datetime_NY.strftime("%H_%M"), type_aam=False)
-            st.write('Отлично, сохранено!')
+#             download_to_drive(st.session_state.bad_info, datetime_NY.strftime("%H_%M"), type_aam=False)
+            b = io.BytesIO()
+            pickle.dump(st.session_state.bad_info, b)
+            b64 = base64.b64encode(b.getvalue()).decode()
+            st.download_button(label="Download data", data=b64, file_name=f"bad_data_{time}.pickle")
             del st.session_state.bad_info
 
 stat = st.button('Посмотреть статистику')
