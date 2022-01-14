@@ -178,7 +178,7 @@ if len(selected_indices) == 1:
                 fix_web, reaction_new = gen_fix_r(reaction, st.session_state.before, st.session_state.after)
                 st.write(svg_html(reaction_new), unsafe_allow_html=True)
             except:
-                st.error('Ошибка при исправлении ААО. Если вы не ошиблись в номерах атомов')
+                st.error('Ошибка при исправлении ААО')
         if load_rule:
             fix_web, reaction_new = gen_fix_r(reaction, st.session_state.before, st.session_state.after)
             if 'bad_info' not in st.session_state:
@@ -203,7 +203,7 @@ if len(selected_indices) == 1:
                     st.text('Словарь пар атомов')
                     st.write(f'{rule[0][2]}')
             except:
-                st.error('Ошибка при создании правила. Если вы не ошиблись в номерах атомов')
+                st.error('Ошибка при создании правила.')
 
         save_all = st.button('Save all')
         if save_all:
