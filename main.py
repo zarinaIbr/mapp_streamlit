@@ -77,7 +77,7 @@ def load_remapping_rules(reactions):
     return rules
 
 def download_to_excel(d_info, type_aam):
-    path = r'C:/Users/pc/pythonProject/stream_mapping/main_secret.json'
+    path = 'main_secret.json'
     gc = pygsheets.authorize(service_file=path)
     if type_aam:
         sh = gc.open('good_mapping')
@@ -215,7 +215,7 @@ if len(selected_indices) == 1:
 stat = st.button('Посмотреть статистику')
 if stat:
     with st.expander("Свернуть/Развернуть", True):
-        path = r'C:/Users/pc/pythonProject/stream_mapping/main_secret.json'
+        path = 'main_secret.json'
         gc = pygsheets.authorize(service_file=path)
         sh_good = gc.open('good_mapping')
         sh_bad = gc.open('bad_mapping')
