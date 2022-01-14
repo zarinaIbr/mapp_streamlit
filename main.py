@@ -223,12 +223,12 @@ if stat:
         df_bad, df_good = wks_bad.get_as_df(), wks_good.get_as_df()
 
         col1, col2, col3 = st.columns(3)
-        col1.metric("Всего реакций", "1358200")
+        col1.metric("Всего реакций", "1358000")
         col2.metric("Кол-во правильных реакций", f"{df_good['freq'].sum()}")
         col3.metric("Создано руллов", f"{len(df_bad['freq'])}")
 
         labels = ['Корректный маппинг', 'Потенциально корректный маппинг', 'Неизвестно']
-        values = [df_good['freq'].sum(), df_bad['freq'].sum(), 1358200 - df_good['freq'].sum() - df_bad['freq'].sum()]
+        values = [df_good['freq'].sum(), df_bad['freq'].sum(), 1358000 - df_good['freq'].sum() - df_bad['freq'].sum()]
         colors = ['green', 'yellow', 'gray']
         fig = go.Figure(data=[go.Pie(labels=labels, values=values)])
         fig.update_traces(marker=dict(colors=colors))
