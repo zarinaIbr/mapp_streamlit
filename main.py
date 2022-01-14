@@ -87,8 +87,8 @@ def download_to_excel(d_info, type_aam):
     df_excel = wks.get_as_df()
     df_new = pd.DataFrame(d_info)
     values = df_new[['rc', 'freq']].values.tolist()
-    if not any(rc in df_excel['query'] for rc in [v[0] for v in values]):
-        wks.append_table(values, start=f'A{len(df_excel) + 1}', end=None, dimension='ROWS', overwrite=False)
+    st.write(values)
+    wks.append_table(values, start=f'A{len(df_excel) + 1}', end=None, dimension='ROWS', overwrite=False)
 
 def download_to_drive(data, time, type_aam):
     with open(f"data_{time}.pickle", 'wb') as f:
