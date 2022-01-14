@@ -87,7 +87,6 @@ def download_to_excel(d_info, type_aam):
     df_excel = wks.get_as_df()
     df_new = pd.DataFrame(d_info)
     values = df_new[['rc', 'freq']].values.tolist()
-    st.write(values)
     wks.append_table(values, start=f'A{len(df_excel) + 1}', end=None, dimension='ROWS', overwrite=False)
 
 def download_to_drive(data, time, type_aam):
@@ -145,8 +144,8 @@ if len(selected_indices) == 1:
         b = io.BytesIO()
         pickle.dump(st.session_state.good_info, b)
         b64 = base64.b64encode(b.getvalue()).decode()
-        st.download_button(label="Download data", data=b64, file_name=f"good_data_{time}.pickle")
-        download_to_excel(st.session_state.good_info, type_aam=True)
+        if st.download_button(label="Download data", data=b64, file_name=f"good_data_{time}.pickle"):
+            download_to_excel(st.session_state.good_info, type_aam=True)
 #         download_to_drive(st.session_state.good_info, datetime_NY.strftime("%H_%M"), type_aam=True)
         del st.session_state.good_info
     elif checkbox_no and not checkbox_yes:
@@ -210,12 +209,12 @@ if len(selected_indices) == 1:
         if save_all:
             tz_NY = pytz.timezone('Europe/Moscow')
             datetime_NY = datetime.now(tz_NY)
-            download_to_excel(st.session_state.bad_info, type_aam=False)
 #             download_to_drive(st.session_state.bad_info, datetime_NY.strftime("%H_%M"), type_aam=False)
             b = io.BytesIO()
             pickle.dump(st.session_state.bad_info, b)
             b64 = base64.b64encode(b.getvalue()).decode()
-            st.download_button(label="Download data", data=b64, file_name=f"bad_data_{time}.pickle")
+            if st.download_button(label="Download data", data=b64, file_name=f"bad_data_{time}.pickle"):
+                download_to_excel(st.session_state.bad_info, type_aam=False)
             del st.session_state.bad_info
 
 stat = st.button('Посмотреть статистику')
