@@ -8,7 +8,7 @@ import pytz
 from collections import defaultdict
 from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
-import shutil
+import io
 import plotly.graph_objs as go
 
 st.markdown(
