@@ -93,7 +93,20 @@ def download_to_drive(data, time, type_aam):
     with open(f"data_{time}.pickle", 'wb') as f:
         pickle.dump(data, f)
     gauth = GoogleAuth()
+#     drive = GoogleDrive(gauth)
+    gauth.LoadCredentialsFile("client_secrets.json")
+    if gauth.credentials is None:
+        gauth.GetFlow()
+        gauth.flow.params.update({'access_type': 'offline'})
+        gauth.flow.params.update({'approval_prompt': 'force'})
+        gauth.LocalWebserverAuth()
+    elif gauth.access_token_expired:
+        gauth.Refresh()
+    else:
+        gauth.Authorize()
+    gauth.SaveCredentialsFile("client_secrets.json")  
     drive = GoogleDrive(gauth)
+    
     upload_file_list = [f"data_{time}.pickle"]
     if type_aam:
         id_folder = '1Yhe2v94GDlqJzNM6K4Gh5Qd2_6tc8Tnd'
