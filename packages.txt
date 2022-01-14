@@ -1,0 +1,7 @@
+pygsheets-dev
+pickle-dev
+datetime-dev
+pandas-dev
+pytz-dev
+pydrive-dev
+plotly-dev
