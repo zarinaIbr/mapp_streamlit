@@ -149,7 +149,7 @@ if len(selected_indices) == 1:
         writer = csv.writer(a_file)
         for key, value in st.session_state.good_info.items():
             writer.writerow([key, value])
-        a_file.close()
+#         a_file.close()
         if st.download_button(label="Download data", data=a_file, file_name=f"good_data_{time}.pickle"):
             download_to_excel(st.session_state.good_info, type_aam=True)
 #         download_to_drive(st.session_state.good_info, datetime_NY.strftime("%H_%M"), type_aam=True)
