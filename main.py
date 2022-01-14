@@ -205,18 +205,18 @@ if len(selected_indices) == 1:
             except:
                 st.error('Ошибка при создании правила.')
 
-#         save_all = st.button('Save all')
-#         if save_all:
+        save_all = st.button('Save all')
+        if save_all:
             tz_NY = pytz.timezone('Europe/Moscow')
             datetime_NY = datetime.now(tz_NY)
             time = datetime_NY.strftime("%H_%M")
             b = io.BytesIO()
             pickle.dump(st.session_state.bad_info, b)
             b64 = base64.b64encode(b.getvalue()).decode()
-            if st.download_button(label="Download data", data=b64, file_name=f"bad_data_{time}.pickle"):
-                download_to_excel(st.session_state.bad_info, type_aam=False)
+            st.download_button(label="Download data", data=b64, file_name=f"bad_data_{time}.pickle")
+            download_to_excel(st.session_state.bad_info, type_aam=False)
     #             download_to_drive(st.session_state.bad_info, datetime_NY.strftime("%H_%M"), type_aam=False)
-                del st.session_state.bad_info
+            del st.session_state.bad_info
 
 stat = st.button('Посмотреть статистику')
 if stat:
