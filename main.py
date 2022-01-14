@@ -136,24 +136,23 @@ if len(selected_indices) == 1:
     elif checkbox_yes and not checkbox_no:
         if 'good_info' not in st.session_state:
             st.session_state.good_info = defaultdict(list)
-        tz_NY = pytz.timezone('Europe/Moscow')
-        datetime_NY = datetime.now(tz_NY)
+
         st.session_state.good_info['rc'].append(selected_rows.values.tolist()[0][0])
         st.session_state.good_info['freq'].append(selected_rows.values.tolist()[0][1])
         st.session_state.good_info['nums_reac'].append(data_all['nums_reactions'].values[int(selected_indices[0])])
-        time = datetime_NY.strftime("%H_%M")
+        if save_all:
+            tz_NY = pytz.timezone('Europe/Moscow')
+            datetime_NY = datetime.now(tz_NY)
+            time = datetime_NY.strftime("%H_%M")
+            data_good = pd.DataFrame(st.session_state.good_info)
+            csv_good = data_good.to_csv().encode('utf-8')
 #         b = io.BytesIO()
 #         pickle.dump(st.session_state.good_info, b)
 #         b64 = base64.b64encode(b.getvalue()).decode()
-        a_file = open(f"good_data_{int(selected_indices[0])}.pickle", "w")
-        writer = csv.writer(a_file)
-        for key, value in st.session_state.good_info.items():
-            writer.writerow([key, value])
-#         a_file.close()
-        if st.download_button(label="Download data", data=a_file, file_name=f"good_data_{time}.pickle"):
+          if st.download_button(label="Download data", data=csv_good, file_name=f"good_data_{time}.pickle"):
             download_to_excel(st.session_state.good_info, type_aam=True)
-#         download_to_drive(st.session_state.good_info, datetime_NY.strftime("%H_%M"), type_aam=True)
-        del st.session_state.good_info
+#           download_to_drive(st.session_state.good_info, datetime_NY.strftime("%H_%M"), type_aam=True)
+            del st.session_state.good_info
     elif checkbox_no and not checkbox_yes:
         if 'before' not in st.session_state and 'after' not in st.session_state:
             st.session_state.before, st.session_state.after = [], []
