@@ -140,6 +140,7 @@ if len(selected_indices) == 1:
         st.session_state.good_info['rc'].append(selected_rows.values.tolist()[0][0])
         st.session_state.good_info['freq'].append(selected_rows.values.tolist()[0][1])
         st.session_state.good_info['nums_reac'].append(data_all['nums_reactions'].values[int(selected_indices[0])])
+        save_all = st.button('Save all')
         if save_all:
             tz_NY = pytz.timezone('Europe/Moscow')
             datetime_NY = datetime.now(tz_NY)
