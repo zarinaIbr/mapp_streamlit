@@ -122,9 +122,6 @@ st.sidebar.markdown("""
 * 6.При возникновении ошибок при исправлении реакции или создании правила, нажмите кнопку LOG
 * 7.После окончания сбора правил, нажмите Save all
 """)
-_, col_log = st.sidebar.columns([5, 1])
-with col_log:
-    log = st.sidebar.button('LOG')
 
 if len(selected_indices) == 1:
     reaction = data_all['reaction'].values[int(selected_indices[0])][0]
@@ -179,7 +176,7 @@ if len(selected_indices) == 1:
                 fix_web, reaction_new = gen_fix_r(reaction, st.session_state.before, st.session_state.after)
                 st.write(svg_html(reaction_new), unsafe_allow_html=True)
             except:
-                st.error('Ошибка при исправлении ААО. Если вы не ошиблись в номерах атомов, нажмите кнопку LOG')
+                st.error('Ошибка при исправлении ААО. Если вы не ошиблись в номерах атомов')
         if load_rule:
             fix_web, reaction_new = gen_fix_r(reaction, st.session_state.before, st.session_state.after)
             if 'bad_info' not in st.session_state:
@@ -194,7 +191,7 @@ if len(selected_indices) == 1:
                 st.session_state.bad_info['rule'].append(rule)
 
                 col_bq, col_gq, col_f = st.columns([5, 5, 1])
-                with col_bq:                                      # Отрегулировать ширину картинок
+                with col_bq:                                      
                     st.text('Р.ц непр.ААО')
                     st.write(svg_html(rule[0][0]), unsafe_allow_html=True)
                 with col_gq:
@@ -204,7 +201,7 @@ if len(selected_indices) == 1:
                     st.text('Словарь пар атомов')
                     st.write(f'{rule[0][2]}')
             except:
-                st.error('Ошибка при создании правила. Если вы не ошиблись в номерах атомов, нажмите кнопку LOG')
+                st.error('Ошибка при создании правила. Если вы не ошиблись в номерах атомов')
 
         save_all = st.button('Save all')
         if save_all:
@@ -237,14 +234,3 @@ if stat:
         fig = go.Figure(data=[go.Pie(labels=labels, values=values)])
         fig.update_traces(marker=dict(colors=colors))
         st.plotly_chart(fig, use_container_width=True)
-
-# if log:
-
-
-
-
-
-
-
-
-
