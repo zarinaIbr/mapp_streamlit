@@ -10,6 +10,7 @@ from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
 import io
 import plotly.graph_objs as go
+import csv
 
 st.markdown(
     """<style>
@@ -141,10 +142,15 @@ if len(selected_indices) == 1:
         st.session_state.good_info['freq'].append(selected_rows.values.tolist()[0][1])
         st.session_state.good_info['nums_reac'].append(data_all['nums_reactions'].values[int(selected_indices[0])])
         time = datetime_NY.strftime("%H_%M")
-        b = io.BytesIO()
-        pickle.dump(st.session_state.good_info, b)
-        b64 = base64.b64encode(b.getvalue()).decode()
-        if st.download_button(label="Download data", data=b64, file_name=f"good_data_{int(selected_indices[0])}.pickle"):
+#         b = io.BytesIO()
+#         pickle.dump(st.session_state.good_info, b)
+#         b64 = base64.b64encode(b.getvalue()).decode()
+        a_file = open(f"good_data_{int(selected_indices[0])}.pickle", "w")
+        writer = csv.writer(a_file)
+        for key, value in st.session_state.good_info.items():
+            writer.writerow([key, value])
+        a_file.close()
+        if st.download_button(label="Download data", data=a_file, file_name=f"good_data_{time}.pickle"):
             download_to_excel(st.session_state.good_info, type_aam=True)
 #         download_to_drive(st.session_state.good_info, datetime_NY.strftime("%H_%M"), type_aam=True)
         del st.session_state.good_info
