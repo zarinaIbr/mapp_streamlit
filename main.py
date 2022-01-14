@@ -144,7 +144,7 @@ if len(selected_indices) == 1:
         b = io.BytesIO()
         pickle.dump(st.session_state.good_info, b)
         b64 = base64.b64encode(b.getvalue()).decode()
-        if st.download_button(label="Download data", data=b64, file_name=f"good_data_{time}.pickle"):
+        if st.download_button(label="Download data", data=b64, file_name=f"good_data_{int(selected_indices[0])}.pickle"):
             download_to_excel(st.session_state.good_info, type_aam=True)
 #         download_to_drive(st.session_state.good_info, datetime_NY.strftime("%H_%M"), type_aam=True)
         del st.session_state.good_info
