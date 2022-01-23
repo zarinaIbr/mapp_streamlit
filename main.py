@@ -87,23 +87,23 @@ def download_to_excel(d_info, type_aam):
     wks = sh.worksheet_by_title('Лист1')
     df_excel = wks.get_as_df()
     df_new = pd.DataFrame(d_info)
-    values = df_new[['rc', 'freq']].values.tolist()
+    values = df_new[['rc', 'index', 'freq']].values.tolist()
     wks.append_table(values, start=f'A{len(df_excel) + 1}', end=None, dimension='ROWS', overwrite=False)
 
-def download_to_drive(data, time, type_aam):
-    with open(f"data_{time}.pickle", 'wb') as f:
-        pickle.dump(data, f)
-    gauth = GoogleAuth()
-    drive = GoogleDrive(gauth)
-    upload_file_list = [f"data_{time}.pickle"]
-    if type_aam:
-        id_folder = '1Yhe2v94GDlqJzNM6K4Gh5Qd2_6tc8Tnd'
-    else:
-        id_folder = '1HcdJo5VxcpTnVdVT8leG6_bjo3j26CnX'
-    for upload_file in upload_file_list:
-        gfile = drive.CreateFile({'parents': [{'id': id_folder}]})
-        gfile.SetContentFile(upload_file)
-        gfile.Upload()
+# def download_to_drive(data, time, type_aam):
+#     with open(f"data_{time}.pickle", 'wb') as f:
+#         pickle.dump(data, f)
+#     gauth = GoogleAuth()
+#     drive = GoogleDrive(gauth)
+#     upload_file_list = [f"data_{time}.pickle"]
+#     if type_aam:
+#         id_folder = '1Yhe2v94GDlqJzNM6K4Gh5Qd2_6tc8Tnd'
+#     else:
+#         id_folder = '1HcdJo5VxcpTnVdVT8leG6_bjo3j26CnX'
+#     for upload_file in upload_file_list:
+#         gfile = drive.CreateFile({'parents': [{'id': id_folder}]})
+#         gfile.SetContentFile(upload_file)
+#         gfile.Upload()
 
 data_all, data_df = load_data()
 st.sidebar.write('Датасет', data_df)
@@ -116,11 +116,11 @@ st.sidebar.markdown("""
 * 1.Выберите один р.ц по его индексу в таблицe и проверьте его правильность по реакции
 * 2.Если маппинг правильный, нажмите Да, и переходите к следующему р.ц
 * 3.Если маппинг ошибочный, нажмите Нет
-    * 3.1.Если словарь НЕ пустой, нажмите Delete
+    * 3.1.Если словарь НЕ пустой, очистите словарь, нажмите Delete!!!
     * 3.2.Добавляйте пары атомов в пустой словарь, нажимая на Add
 * 4.После сбора словаря, проверьте себя по сгенерированной реакции
 * 5.Если исправленный маппинг реакции вы считаете верным, нажмите Сгенерировать правило
-* 6.После окончания сбора правил, нажмите Save all
+* 6.После окончания сбора правил, нажмите "Save true/false data" и "Сохранить данные"
 """)
 
 if len(selected_indices) == 1:
@@ -136,24 +136,11 @@ if len(selected_indices) == 1:
     elif checkbox_yes and not checkbox_no:
         if 'good_info' not in st.session_state:
             st.session_state.good_info = defaultdict(list)
-
-        st.session_state.good_info['rc'].append(selected_rows.values.tolist()[0][0])
-        st.session_state.good_info['freq'].append(selected_rows.values.tolist()[0][1])
-        st.session_state.good_info['nums_reac'].append(data_all['nums_reactions'].values[int(selected_indices[0])])
-        save_all = st.button('Save all')
-        if save_all:
-            tz_NY = pytz.timezone('Europe/Moscow')
-            datetime_NY = datetime.now(tz_NY)
-            time = datetime_NY.strftime("%H_%M")
-            data_good = pd.DataFrame(st.session_state.good_info)
-            csv_good = data_good.to_csv().encode('utf-8')
-#         b = io.BytesIO()
-#         pickle.dump(st.session_state.good_info, b)
-#         b64 = base64.b64encode(b.getvalue()).decode()
-            if st.download_button(label="Download data", data=csv_good, file_name=f"good_data_{int(selected_indices[0])}.csv"):
-                download_to_excel(st.session_state.good_info, type_aam=True)
-            #           download_to_drive(st.session_state.good_info, datetime_NY.strftime("%H_%M"), type_aam=True)
-                del st.session_state.good_info
+        if selected_rows.values.tolist()[0][0] not in st.session_state.good_info['rc']:
+            st.session_state.good_info['index'].append(int(selected_indices[0]))
+            st.session_state.good_info['rc'].append(selected_rows.values.tolist()[0][0])
+            st.session_state.good_info['freq'].append(selected_rows.values.tolist()[0][1])
+            st.session_state.good_info['nums_reac'].append(data_all['nums_reactions'].values[int(selected_indices[0])])
     elif checkbox_no and not checkbox_yes:
         if 'before' not in st.session_state and 'after' not in st.session_state:
             st.session_state.before, st.session_state.after = [], []
@@ -189,40 +176,29 @@ if len(selected_indices) == 1:
             fix_web, reaction_new = gen_fix_r(reaction, st.session_state.before, st.session_state.after)
             if 'bad_info' not in st.session_state:
                 st.session_state.bad_info = defaultdict(list)
-            try:
-                rule = load_remapping_rules([(reaction, reaction_new)])
-                st.session_state.bad_info['rc'].append(selected_rows.values.tolist()[0][0])
-                st.session_state.bad_info['freq'].append(selected_rows.values.tolist()[0][1])
-                st.session_state.bad_info['nums_reac'].append(data_all['nums_reactions'].values[int(selected_indices[0])])
-                st.session_state.bad_info['bad_r'].append(reaction)
-                st.session_state.bad_info['good_r'].append(reaction_new)
-                st.session_state.bad_info['rule'].append(rule)
+            if selected_rows.values.tolist()[0][0] not in st.session_state.bad_info['rc']:
+                try:
+                    rule = load_remapping_rules([(reaction, reaction_new)])
+                    st.session_state.bad_info['index'].append(int(selected_indices[0]))
+                    st.session_state.bad_info['rc'].append(selected_rows.values.tolist()[0][0])
+                    st.session_state.bad_info['freq'].append(selected_rows.values.tolist()[0][1])
+                    st.session_state.bad_info['nums_reac'].append(data_all['nums_reactions'].values[int(selected_indices[0])])
+                    st.session_state.bad_info['bad_r'].append(reaction)
+                    st.session_state.bad_info['good_r'].append(reaction_new)
+                    st.session_state.bad_info['rule'].append(rule)
 
-                col_bq, col_gq, col_f = st.columns([5, 5, 1])
-                with col_bq:                                      
-                    st.text('Р.ц непр.ААО')
-                    st.write(svg_html(rule[0][0]), unsafe_allow_html=True)
-                with col_gq:
-                    st.text('Р.ц прав.ААО')
-                    st.write(svg_html(rule[0][1]), unsafe_allow_html=True)
-                with col_f:
-                    st.text('Словарь пар атомов')
-                    st.write(f'{rule[0][2]}')
-            except:
-                st.error('Ошибка при создании правила.')
-
-        save_all = st.button('Save all')
-        if save_all:
-            tz_NY = pytz.timezone('Europe/Moscow')
-            datetime_NY = datetime.now(tz_NY)
-            time = datetime_NY.strftime("%H_%M")
-            b = io.BytesIO()
-            pickle.dump(st.session_state.bad_info, b)
-            b64 = base64.b64encode(b.getvalue()).decode()
-            st.download_button(label="Download data", data=b64, file_name=f"bad_data_{time}.pickle")
-            download_to_excel(st.session_state.bad_info, type_aam=False)
-    #             download_to_drive(st.session_state.bad_info, datetime_NY.strftime("%H_%M"), type_aam=False)
-            del st.session_state.bad_info
+                    col_bq, col_gq, col_f = st.columns([5, 5, 1])
+                    with col_bq:                                      
+                        st.text('Р.ц непр.ААО')
+                        st.write(svg_html(rule[0][0]), unsafe_allow_html=True)
+                    with col_gq:
+                        st.text('Р.ц прав.ААО')
+                        st.write(svg_html(rule[0][1]), unsafe_allow_html=True)
+                    with col_f:
+                        st.text('Словарь пар атомов')
+                        st.write(f'{rule[0][2]}')
+                except:
+                    st.error('Ошибка при создании правила.')
 
 stat = st.button('Посмотреть статистику')
 if stat:
@@ -246,3 +222,18 @@ if stat:
         fig = go.Figure(data=[go.Pie(labels=labels, values=values)])
         fig.update_traces(marker=dict(colors=colors))
         st.plotly_chart(fig, use_container_width=True)
+   
+but_t = st.sidebar.button('Save True data')
+but_f = st.sidebar.button('Save False data')
+if but_t:
+    data_good = pd.DataFrame(st.session_state.good_info)
+    csv_good = data_good.to_csv().encode('utf-8')
+    download_to_excel(st.session_state.good_info, type_aam=True)
+    st.sidebar.download_button(label="Сохранить данные по правильным реакциям", data=csv_good, file_name=f"good_data_{int(selected_indices[0])}.csv")
+    del st.session_state.good_info
+if but_f:
+    data_bad = pd.DataFrame(st.session_state.bad_info)
+    csv_bad = data_bad.to_csv().encode('utf-8')
+    download_to_excel(st.session_state.bad_info, type_aam=False)
+    st.sidebar.download_button(label="Скачать данные по ошибочным реакциям", data=csv_bad, file_name=f"bad_data_{int(selected_indices[0])}.csv")
+    del st.session_state.bad_info
