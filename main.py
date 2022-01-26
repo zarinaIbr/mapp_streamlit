@@ -226,10 +226,11 @@ if stat:
 but_t = st.sidebar.button('Save True data')
 but_f = st.sidebar.button('Save False data')
 if but_t:
-    data_good = pd.DataFrame(st.session_state.good_info)
-    csv_good = data_good.to_csv().encode('utf-8')
+    out = pickle.dumps(st.session_state.good_info)
+#     data_good = pd.DataFrame(st.session_state.good_info)
+#     csv_good = data_good.to_csv().encode('utf-8')
     download_to_excel(st.session_state.good_info, type_aam=True)
-    st.sidebar.download_button(label="Сохранить данные по правильным реакциям", data=csv_good, file_name=f"good_data_{int(selected_indices[0])}.csv")
+    st.sidebar.download_button(label="Сохранить данные по правильным реакциям", data=out, file_name=f"good_data_{int(selected_indices[0])}.pickle")
     del st.session_state.good_info
 if but_f:
     data_bad = pd.DataFrame(st.session_state.bad_info)
