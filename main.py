@@ -233,8 +233,7 @@ if but_t:
     st.sidebar.download_button(label="Сохранить данные по правильным реакциям", data=out, file_name=f"good_data_{int(selected_indices[0])}.pickle")
     del st.session_state.good_info
 if but_f:
-    data_bad = pd.DataFrame(st.session_state.bad_info)
-    csv_bad = data_bad.to_csv().encode('utf-8')
+    out_bad = pickle.dumps(st.session_state.bad_info)
     download_to_excel(st.session_state.bad_info, type_aam=False)
-    st.sidebar.download_button(label="Скачать данные по ошибочным реакциям", data=csv_bad, file_name=f"bad_data_{int(selected_indices[0])}.csv")
+    st.sidebar.download_button(label="Скачать данные по ошибочным реакциям", data=out_bad, file_name=f"bad_data_{int(selected_indices[0])}.pickle")
     del st.session_state.bad_info
