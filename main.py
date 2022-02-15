@@ -1,16 +1,11 @@
-import pandas as pd
-import streamlit as st
-import pickle
-import base64
-import pygsheets
-from datetime import datetime
-import pytz
 from collections import defaultdict
-from pydrive.auth import GoogleAuth
-from pydrive.drive import GoogleDrive
-import io
+import base64
+import pandas as pd
+import pickle
 import plotly.graph_objs as go
-import csv
+import pygsheets
+import streamlit as st
+
 
 st.markdown(
     """<style>
@@ -89,21 +84,6 @@ def download_to_excel(d_info, type_aam):
     df_new = pd.DataFrame(d_info)
     values = df_new[['rc', 'index', 'freq']].values.tolist()
     wks.append_table(values, start=f'A{len(df_excel) + 1}', end=None, dimension='ROWS', overwrite=False)
-
-# def download_to_drive(data, time, type_aam):
-#     with open(f"data_{time}.pickle", 'wb') as f:
-#         pickle.dump(data, f)
-#     gauth = GoogleAuth()
-#     drive = GoogleDrive(gauth)
-#     upload_file_list = [f"data_{time}.pickle"]
-#     if type_aam:
-#         id_folder = '1Yhe2v94GDlqJzNM6K4Gh5Qd2_6tc8Tnd'
-#     else:
-#         id_folder = '1HcdJo5VxcpTnVdVT8leG6_bjo3j26CnX'
-#     for upload_file in upload_file_list:
-#         gfile = drive.CreateFile({'parents': [{'id': id_folder}]})
-#         gfile.SetContentFile(upload_file)
-#         gfile.Upload()
 
 data_all, data_df = load_data()
 st.sidebar.write('Датасет', data_df)
